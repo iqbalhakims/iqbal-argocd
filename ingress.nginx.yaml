@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingress-nginx
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: registry-1.docker.io/bitnamicharts 
+      targetRevision: 11.6.22
+      chart: nginx-ingress-controller
+      helm:
+        valueFiles:
+          - $values/helm_charts/nginx-ingress-controller/values.yaml
+    - repoURL: https://github.com/iqbalhakims/Iqbal-helm.git
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nginx-ingress # Target namespace for deployment, as per original YAML
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
