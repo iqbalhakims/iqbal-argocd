@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-promethues-stack
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      targetRevision: 72.5.0
+      chart: kube-prometheus-stack
+      helm:
+        valueFiles:
+          - $values/helm_charts/kube-promethues-stack/values.yaml
+    - repoURL: https://github.com/iqbalhakims/Iqbal-helm.git
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring # Target namespace for deployment, as per original YAML
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+

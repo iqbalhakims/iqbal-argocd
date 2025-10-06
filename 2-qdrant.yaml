@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: qdrant
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://qdrant.github.io/qdrant-helm
+      targetRevision: 1.15.5
+      chart: qdrant
+      helm:
+        valueFiles:
+          - $values/helm_charts/qdrant/values.yaml
+    - repoURL: https://github.com/iqbalhakims/Iqbal-helm.git
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: qdrant # Target namespace for deployment, as per original YAML
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
